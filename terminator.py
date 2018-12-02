@@ -67,11 +67,67 @@ def get_video_urls (playlist_id):
     return videos , num
 
 
+def title_for_url (Url):
+    res = requests.get(Url).text
+    soup = BeautifulSoup(res , "lxml")
+    title = soup.find('span',class_="watch-title").text\
+    .replace("\n",'').strip()
+    return title
+
+def list_Terminator(Url , Sub):
+
+    pi = get_play_list_id(Url)
+    videos , number = get_video_urls(pi)
 
 
-if __name__ == "__main__":
+    print("there are {} videos in this playlist".format(number))
+    for i in range(len(videos)):
+        print(str(i+1)+"-"+title_for_url(videos[i]))
+    select = input("Enter Number of videos you want with '-' between:")
+
+
+    if not os.path.exists("/home/mahdi/Downloads/utube"):
+        os.mkdir("/home/mahdi/Downloads/utube")
+    if not os.path.exists("/home/mahdi/Downloads/utube/"+pi):
+        os.mkdir("/home/mahdi/Downloads/utube/"+pi)
+
+
+    if (not Sub) and (select == '0'):
+        #just download all list without sub
+        print("we are here")
+
+    elif (not Sub) and (select != '0'):
+        #downloading choosen items without sub
+        pass
+
+    elif (Sub) and (select == '0'):
+        #download all list with sub
+        pass
+
+    elif (Sub) and (select != '0'):
+        #downloading choosen items with sub
+        pass
+        
+    else:
+        print("the value of sub parameter or the numbers of videos is invalid")
+
+def Terminator ():
     initialize()
     if connection_check():
         url = input("Enter Youtube Url:")
-        pl = get_play_list_id(url)
-        v , n = get_video_urls(pl)
+        options = input("for downloading a list Enter (L/l) and for Single viedo Enter (S/s):")
+        sub = input("do you want subtitle(y/Y) for yes and (n/N) for no:")
+        
+        if options.lower() == 'l' and sub.lower() == 'n':
+            list_Terminator(url,False)
+        elif options.lower() == 'l' and sub.lower() == 'y':
+            pass
+        elif options.lower() == 's' and sub.lower() == 'n':
+            pass
+        elif options.lower() == 's' and sub.lower() == 'y':
+            pass
+        else:
+            print("is it a list or a single video?")
+
+if __name__ == "__main__":
+    Terminator()
