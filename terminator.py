@@ -3,6 +3,7 @@ import re
 from bs4 import BeautifulSoup
 from pytube import YouTube
 import os
+import pickle
 
 def connection_check():
     # internet connection check!
@@ -17,6 +18,12 @@ def connection_check():
     except:
         print("check your connection")
         return False
+
+def initialize():
+    if not os.path.exists("/home/mahdi/Downloads/utube"):
+        os.mkdir("/home/mahdi/Downloads/utube")
+    if not os.path.exists("/home/mahdi/.utube"):
+        os.mkdir("/home/mahdi/.utube")
 
 def get_play_list_id (Url):
     #extract playlist id from link
@@ -33,11 +40,30 @@ def get_play_list_id (Url):
         print("this Url doesn't contain list")
         return None
 
+def final_video_urls (Urls):
+    #generates valid video urls
+    finals = []
+    for url in Urls:
+        ind = url.index("&")
+        furl = 'http://www.youtube.com/'+url[:ind]
+        finals.append(furl)
+    finals = list(set(finals))
+    return finals , len(finals)
 
+def get_video_urls (playlist_id):
+    #extracts playlist links with given id
+    rawhtml = requests.get("https://www.youtube.com/playlist?list={}".format(playlist_id)).text
+    patern = re.compile(r'watch\?v=\S+?list=' + playlist_id)
+    matches = list(re.findall(patern , rawhtml))
+    videos , num = final_video_urls(matches)
+
+    return videos , num
 
 
 
 
 if __name__ == "__main__":
-    url = input("Enter Youtube Url:")
-    print(get_play_list_id(url))
+    initialize()
+    if connection_check():
+        url = input("Enter Youtube Url:")
+        print(get_play_list_id(url))
