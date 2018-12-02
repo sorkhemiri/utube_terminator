@@ -50,13 +50,20 @@ def final_video_urls (Urls):
     finals = list(set(finals))
     return finals , len(finals)
 
+def set_files_generator(playlist_id , videos):
+    if not os.path.exists("/home/mahdi/.utube/"+playlist_id):
+        os.mkdir("/home/mahdi/.utube/"+playlist_id)
+    with open("/home/mahdi/.utube/{}/.utt".format(playlist_id),"wb") as file:
+        pickle.dump(videos,file)
+
+
 def get_video_urls (playlist_id):
     #extracts playlist links with given id
     rawhtml = requests.get("https://www.youtube.com/playlist?list={}".format(playlist_id)).text
     patern = re.compile(r'watch\?v=\S+?list=' + playlist_id)
     matches = list(re.findall(patern , rawhtml))
     videos , num = final_video_urls(matches)
-
+    set_files_generator(playlist_id,videos)
     return videos , num
 
 
@@ -66,4 +73,5 @@ if __name__ == "__main__":
     initialize()
     if connection_check():
         url = input("Enter Youtube Url:")
-        print(get_play_list_id(url))
+        pl = get_play_list_id(url)
+        v , n = get_video_urls(pl)
