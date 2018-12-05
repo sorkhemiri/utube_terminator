@@ -74,6 +74,62 @@ def title_for_url (Url):
     .replace("\n",'').strip()
     return title
 
+
+def video_streams(Url):
+    yt = YouTube(Url).streams.all()
+    streams = []
+    for i in yt:
+        item = str(i)
+        itag = re.search(r'itag=\S+',item)
+        itag_number = item[itag.span()[0]+6:itag.span()[1]-1]
+        typepat = re.search(r'mime_type=\S+',item)
+        typ , frmt = item[typepat.span()[0]+11:typepat.span()[1]-1].split("/")
+        try:
+            respat=re.search(r'res=\S+',item)
+            res = item[respat.span()[0]+5:respat.span()[1]-1]
+            streams.append((itag_number , typ ,frmt,res))
+        except:
+            abrpat=re.search(r'abr=\S+',item)
+            abr = item[abrpat.span()[0]+5:abrpat.span()[1]-1]
+            streams.append((itag_number , typ,frmt,abr))
+        else:
+            pass
+    return streams
+
+def stream_picker(streams,typee,formatt,res):
+    gstreams = []
+
+    for item in streams:
+        if item[1]==typee and item[2]==formatt and item[3]==res:
+            return item[0]
+        elif item[1]==typee and item[2]==formatt:
+            gstreams.append(item)
+    
+    print(gstreams)
+
+    res_group = ['1080p','720p','480p','360p','240p','144p']
+    if typee == 'video':
+        #for videos
+        if not (res in res_group):
+            print('wrong res!')
+            return None
+        for item in gstreams:
+            for r in res_group:
+                if r == res:
+                    continue
+                elif item[3]==r:
+                    return item[0]
+        
+        print('match not found')
+            
+        if typee == 'audio':
+            #for audio
+            pass
+
+def single_video_downloader(Url,typee,formatt,res):
+    streams = video_streams(Url)
+    itag = stream_picker(streams,typee,formatt,res)
+    print('itag='+itag)
 def list_Terminator(Url , Sub):
 
     pi = get_play_list_id(Url)
@@ -94,7 +150,9 @@ def list_Terminator(Url , Sub):
 
     if (not Sub) and (select == '0'):
         #just download all list without sub
-        print("we are here")
+        formatt=input("what format do you want:")
+        ress = input("what resolotion do you want:")
+        single_video_downloader(videos[0],'video',formatt,ress)
 
     elif (not Sub) and (select != '0'):
         #downloading choosen items without sub
