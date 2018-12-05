@@ -5,6 +5,17 @@ from pytube import YouTube
 import os
 import pickle
 
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+
 def connection_check():
     # internet connection check!
     try:
@@ -101,7 +112,7 @@ def stream_picker(streams,typee,formatt,res):
 
     for item in streams:
         if item[1]==typee and item[2]==formatt and item[3]==res:
-            return item[0]
+            return item[0] , res
         elif item[1]==typee and item[2]==formatt:
             gstreams.append(item)
     
@@ -118,18 +129,26 @@ def stream_picker(streams,typee,formatt,res):
                 if r == res:
                     continue
                 elif item[3]==r:
-                    return item[0]
+                    return item[0] , r
         
         print('match not found')
-            
+        return None , 0
         if typee == 'audio':
             #for audio
             pass
 
-def single_video_downloader(Url,typee,formatt,res):
+
+def video_download(Url,itag,playlist_id):
+    YouTube(Url).streams.get_by_itag(itag).download('/home/mahdi/Downloads/utube/'+playlist_id)
+
+def single_video_downloader(Url,typee,formatt,res,playlist_id):
     streams = video_streams(Url)
-    itag = stream_picker(streams,typee,formatt,res)
-    print('itag='+itag)
+    itag , resol = stream_picker(streams,typee,formatt,res)
+    video_download(Url,itag,playlist_id)
+    return resol
+
+
+
 def list_Terminator(Url , Sub):
 
     pi = get_play_list_id(Url)
@@ -152,7 +171,16 @@ def list_Terminator(Url , Sub):
         #just download all list without sub
         formatt=input("what format do you want:")
         ress = input("what resolotion do you want:")
-        single_video_downloader(videos[0],'video',formatt,ress)
+        for i in range(len(videos)):
+            try:
+                resol = single_video_downloader(videos[i],'video',formatt,ress,pi)
+                print('{}-link:{}-done!'.format(i+1,videos[i]))
+                print('res='+resol)
+                print("########################")
+            except expression as err:
+                print(bcolors.FAIL+'{}-link:{}-error!'.format(i+1,videos[i]))
+                print(bcolors.FAIL+str(err))
+                print(bcolors.FAIL+"########################")
 
     elif (not Sub) and (select != '0'):
         #downloading choosen items without sub
