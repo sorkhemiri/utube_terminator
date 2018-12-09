@@ -174,10 +174,10 @@ def list_Terminator(Url , Sub):
         for i in range(len(videos)):
             try:
                 resol = single_video_downloader(videos[i],'video',formatt,ress,pi)
-                print('{}-link:{}-done!'.format(i+1,videos[i]))
-                print('res='+resol)
-                print("########################")
-            except expression as err:
+                print(bcolors.OKGREEN+'{}-link:{}-done!'.format(i+1,videos[i]))
+                print(bcolors.OKGREEN+'res='+resol)
+                print(bcolors.OKGREEN+"########################")
+            except Exception as err:
                 print(bcolors.FAIL+'{}-link:{}-error!'.format(i+1,videos[i]))
                 print(bcolors.FAIL+str(err))
                 print(bcolors.FAIL+"########################")
