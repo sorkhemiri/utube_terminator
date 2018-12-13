@@ -16,6 +16,12 @@ class bcolors:
     UNDERLINE = '\033[4m'
 
 
+def create_path(PATH , DIR):
+#  checks if a dir exists in a path, if not, it creates one.
+    DIR_PATH = os.path.join(PATH, DIR)
+    if not os.path.exists(DIR_PATH):
+        os.mkdir(DIR_PATH)
+
 def connection_check():
     # internet connection check!
     try:
@@ -31,10 +37,11 @@ def connection_check():
         return False
 
 def initialize():
-    if not os.path.exists("/home/mahdi/Downloads/utube"):
-        os.mkdir("/home/mahdi/Downloads/utube")
-    if not os.path.exists("/home/mahdi/.utube"):
-        os.mkdir("/home/mahdi/.utube")
+    #init folders
+    home_path = os.path.expanduser("~")
+    create_path(home_path,"Downloads")
+    create_path(home_path,"Downloads/utube")
+    create_path(home_path,".utube")
 
 def get_play_list_id (Url):
     #extract playlist id from link
@@ -62,9 +69,10 @@ def final_video_urls (Urls):
     return finals , len(finals)
 
 def set_files_generator(playlist_id , videos):
-    if not os.path.exists("/home/mahdi/.utube/"+playlist_id):
-        os.mkdir("/home/mahdi/.utube/"+playlist_id)
-    with open("/home/mahdi/.utube/{}/.utt".format(playlist_id),"wb") as file:
+    home_path = os.path.expanduser("~")
+    create_path(home_path,".utube")
+    create_path(home_path,".utube/"+playlist_id)
+    with open(home_path+"/.utube/{}/.utt".format(playlist_id),"wb") as file:
         pickle.dump(videos,file)
 
 
@@ -160,15 +168,16 @@ def list_Terminator(Url , Sub):
         print(str(i+1)+"-"+title_for_url(videos[i]))
     select = input("Enter Number of videos you want with '-' between:")
 
-
-    if not os.path.exists("/home/mahdi/Downloads/utube"):
-        os.mkdir("/home/mahdi/Downloads/utube")
-    if not os.path.exists("/home/mahdi/Downloads/utube/"+pi):
-        os.mkdir("/home/mahdi/Downloads/utube/"+pi)
+    home_path = os.path.expanduser("~")
+    create_path(home_path,"Downloads")
+    create_path(home_path,"Downloads/utube")
+    create_path(home_path,"Downloads/utube/"+pi)
 
 
     if (not Sub) and (select == '0'):
         #just download all list without sub
+        e = 0
+        s = 0
         formatt=input("what format do you want:")
         ress = input("what resolotion do you want:")
         for i in range(len(videos)):
@@ -177,11 +186,13 @@ def list_Terminator(Url , Sub):
                 print(bcolors.OKGREEN+'{}-link:{}-done!'.format(i+1,videos[i]))
                 print(bcolors.OKGREEN+'res='+resol)
                 print(bcolors.OKGREEN+"########################")
+                s += 1
             except Exception as err:
                 print(bcolors.FAIL+'{}-link:{}-error!'.format(i+1,videos[i]))
                 print(bcolors.FAIL+str(err))
                 print(bcolors.FAIL+"########################")
-
+                e += 1
+        print("there was {} seccess and {} failiur in list".format(s , e))
     elif (not Sub) and (select != '0'):
         #downloading choosen items without sub
         pass
