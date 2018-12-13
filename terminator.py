@@ -208,6 +208,23 @@ def list_Terminator(Url , Sub):
     else:
         print("the value of sub parameter or the numbers of videos is invalid")
 
+
+def single_video_terminator (Url , Sub):
+    home_path = os.path.expanduser("~")
+    create_path(home_path,"Downloads/utube/videos")
+    if not Sub:
+        formatt=input("what format do you want:")
+        ress = input("what resolotion do you want:")
+        try:
+            resol = single_video_downloader(Url,'video',formatt,ress,"videos")
+            print(bcolors.OKGREEN+'link:{}-done!'.format(Url))
+            print(bcolors.OKGREEN+'res='+resol)
+            print(bcolors.OKGREEN+"########################")
+        except Exception as err:
+            print(bcolors.FAIL+'link:{}-error!'.format(Url))
+            print(bcolors.FAIL+str(err))
+            print(bcolors.FAIL+"########################")
+
 def Terminator ():
     initialize()
     if connection_check():
@@ -220,7 +237,7 @@ def Terminator ():
         elif options.lower() == 'l' and sub.lower() == 'y':
             pass
         elif options.lower() == 's' and sub.lower() == 'n':
-            pass
+            single_video_terminator(url,False)
         elif options.lower() == 's' and sub.lower() == 'y':
             pass
         else:
