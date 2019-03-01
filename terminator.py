@@ -57,7 +57,7 @@ class UTUBE:
             elif options.lower() == 'l' and sub.lower() == 'y':
                 raise NotImplemented
             elif options.lower() == 's' and sub.lower() == 'n':
-                self.single_video_terminator(sub=False)
+                self.single_video_terminator(Sub=False)
             elif options.lower() == 's' and sub.lower() == 'y':
                 raise NotImplemented
             else:
