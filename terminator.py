@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 from pytube import YouTube
 import os
 import pickle
+from multiprocessing.pool import ThreadPool
 
 class bcolors:
     HEADER = '\033[95m'
@@ -181,8 +182,18 @@ class UTUBE:
 
 
         print("there are {} videos in this playlist".format(number))
-        for i in range(len(videos)):
-            print(str(i+1)+"-"+self.title_for_url(videos[i]))
+
+        print("Getting streams, please wait ... ")
+
+        pool = ThreadPool(processes=16)
+        res = pool.map_async(self.title_for_url, (videos[i] for i in range(len(videos))))
+        streams = res.get()
+
+        for i in range(len(streams)):
+            print(str(i+1)+"-"+streams[i])
+
+
+
         select = input("Enter Number of videos you want with '-' between:")
         create_dir_in_path(self.download_dir,pi)
 
